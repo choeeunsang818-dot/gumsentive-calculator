@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7f1e5" />
+  <title>금센티브 매입 계산기</title>
+
+  <style>
+    :root {
+      --bg: #f7f1e5;
+      --card: #fffdf8;
+      --navy: #17345b;
+      --brown: #7a5a3a;
+      --gold: #b89452;
+      --gold-dark: #8f6f35;
+      --text: #2c2925;
+      --muted: #746e66;
+      --line: #ded4c3;
+      --danger: #b43c32;
+      --success: #3c6b49;
+      --shadow: 0 10px 30px rgba(55, 42, 25, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Pretendard,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .wrap {
+      width: min(100%, 1080px);
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .header {
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 28px;
+      color: var(--navy);
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #efe2c7;
+      color: var(--gold-dark);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      color: var(--navy);
+      font-size: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 13px 12px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184, 148, 82, 0.12);
+    }
+
+    .karat-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .karat-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 13px;
+      cursor: pointer;
+      font-weight: 900;
+      color: var(--navy);
+    }
+
+    .karat-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #fff;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: #fff;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #fff;
+    }
+
+    .btn-light {
+      background: #f0eadf;
+      color: var(--brown);
+    }
+
+    .btn-danger {
+      background: #f8e7e4;
+      color: var(--danger);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .product-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .product-row {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .product-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .product-title {
+      font-weight: 900;
+      color: var(--navy);
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .result-box {
+      background: #f8f4ec;
+      border-radius: 14px;
+      padding: 13px;
+    }
+
+    .result-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .result-box strong {
+      display: block;
+      color: var(--navy);
+      font-size: 17px;
+      word-break: keep-all;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .summary-box {
+      padding: 16px;
+      border-radius: 16px;
+      background: #f8f4ec;
+    }
+
+    .summary-box .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .summary-box .value {
+      font-size: 21px;
+      color: var(--navy);
+      font-weight: 900;
+    }
+
+    .summary-box.important {
+      background: #eee4cd;
+    }
+
+    .summary-box.important .value {
+      color: var(--gold-dark);
+      font-size: 26px;
+    }
+
+    .summary-box.loss {
+      background: #f9e8e5;
+    }
+
+    .summary-box.loss .value {
+      color: var(--danger);
+    }
+
+    details {
+      border-top: 1px solid var(--line);
+      margin-top: 16px;
+      padding-top: 12px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 900;
+      color: var(--navy);
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .inline-note {
+      background: #fff7e8;
+      border: 1px solid #ead6ad;
+      color: #6f5831;
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .tiny {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .danger-text {
+      color: var(--danger);
+      font-weight: 900;
+    }
+
+    .success-text {
+      color: var(--success);
+      font-weight: 900;
+    }
+
+    @media (max-width: 760px) {
+      .wrap {
+        padding: 12px;
+      }
+
+      .brand {
+        align-items: flex-start;
+      }
+
+      .brand h1 {
+        font-size: 23px;
+      }
+
+      .grid,
+      .grid-3,
+      .result-grid,
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .product-top {
+        align-items: flex-start;
+      }
+
+      .badge {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="header">
+      <div class="brand">
+        <div>
+          <h1>금센티브 매입 계산기</h1>
+          <p>중량 입력 → 고객 지급액 → 24K 환산 → 예상 마진 자동 계산</p>
+        </div>
+        <div class="badge">Gold + Incentive</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>오늘의 계산 기준</h2>
+
+      <div class="grid-3">
+        <div class="field">
+          <label>24K 고객 기준 매입가</label>
+          <input id="price24" type="number" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label>18K 고객 기준 매입가</label>
+          <input id="price18" type="number" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label>14K 고객 기준 매입가</label>
+          <input id="price14" type="number" inputmode="numeric" />
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:12px;">
+        <div class="field">
+          <label>24K 추가 지급</label>
+          <input id="bonus24" type="number" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label>18K 추가 지급</label>
+          <input id="bonus18" type="number" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label>14K 추가 지급</label>
+          <input id="bonus14" type="number" inputmode="numeric" />
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top:12px;">
+        <div class="field">
+          <label>24K 도매 정산 기준가</label>
+          <input id="settlement24" type="number" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label>순금 판매가 참고값</label>
+          <input id="sale24" type="number" inputmode="numeric" />
+        </div>
+      </div>
+
+      <details>
+        <summary>⚙ 계산 기준 설정</summary>
+
+        <div class="grid-3" style="margin-top:14px;">
+          <div class="field">
+            <label>24K 정산 환산율</label>
+            <input id="rate24" type="number" step="0.001" inputmode="decimal" />
+          </div>
+
+          <div class="field">
+            <label>18K 정산 환산율</label>
+            <input id="rate18" type="number" step="0.001" inputmode="decimal" />
+          </div>
+
+          <div class="field">
+            <label>14K 정산 환산율</label>
+            <input id="rate14" type="number" step="0.001" inputmode="decimal" />
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top:12px;">
+          <div class="field">
+            <label>분석비</label>
+            <input id="analysisFee" type="number" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label>정련비</label>
+            <input id="refiningFee" type="number" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label>배송비</label>
+            <input id="shippingFee" type="number" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:12px;">
+          <div class="field">
+            <label>기타 비용</label>
+            <input id="etcFee" type="number" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label>리뷰/이벤트 추가 지급</label>
+            <input id="eventFee" type="number" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="inline-note">
+          14K·18K 환산율은 금의 이론상 순도를 뜻하는 값이 아니라,
+          실제 거래 업체의 정산 기준값으로 사용하세요.
+        </div>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>매입 제품</h2>
+
+      <div id="productList" class="product-list"></div>
+
+      <div class="actions">
+        <button class="btn btn-gold" onclick="addProduct()">+ 제품 추가</button>
+        <button class="btn btn-light" onclick="clearProducts()">고객 입력 초기화</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>총 매입 결과</h2>
+
+      <div class="summary">
+        <div class="summary-box">
+          <div class="label">총 중량</div>
+          <div class="value" id="totalWeight">0.00g</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="label">총 24K 환산량</div>
+          <div class="value" id="totalPure">0.000돈</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="label">고객 총 지급액</div>
+          <div class="value" id="totalPay">0원</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="label">예상 정산금액</div>
+          <div class="value" id="totalSettlement">0원</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="label">추가 비용 합계</div>
+          <div class="value" id="totalCosts">0원</div>
+        </div>
+
+        <div class="summary-box important" id="profitBox">
+          <div class="label">최종 예상 순이익</div>
+          <div class="value" id="totalProfit">0원</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="label">예상 마진율</div>
+          <div class="value" id="marginRate">0.00%</div>
+        </div>
+
+        <div class="summary-box">
+          <div class="label">재고 판매 참고가치</div>
+          <div class="value" id="inventoryValue">0원</div>
+        </div>
+      </div>
+
+      <div id="warningArea" class="inline-note"></div>
+    </section>
+
+    <section class="card">
+      <h2>목표 마진 역산</h2>
+
+      <div class="grid">
+        <div class="field">
+          <label>목표 마진 금액</label>
+          <input id="targetProfit" type="number" inputmode="numeric" placeholder="예: 20000" />
+        </div>
+
+        <div class="field">
+          <label>목표 마진율 (%)</label>
+          <input id="targetMarginRate" type="number" step="0.1" inputmode="decimal" placeholder="예: 2" />
+        </div>
+      </div>
+
+      <div class="result-grid">
+        <div class="result-box">
+          <span>목표 마진 기준 최대 고객 지급액</span>
+          <strong id="maxCustomerPay">0원</strong>
+        </div>
+
+        <div class="result-box">
+          <span>목표 마진율 기준 최대 고객 지급액</span>
+          <strong id="maxCustomerPayRate">0원</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>주의사항</h2>
+
+      <p class="help">
+        ※ 본 계산기는 매입 판단을 돕기 위한 내부 참고용 계산기입니다.<br>
+        ※ 14K·18K 환산율은 업체별 정산 기준에 따라 달라질 수 있습니다.<br>
+        ※ 실제 정산금액은 분석 결과, 공제율, 정련비, 배송비, 수수료 등에 따라 달라질 수 있습니다.<br>
+        ※ 중간 계산값은 반올림하지 않고 유지하며, 화면 표시에서만 자릿수를 정리합니다.
+      </p>
+
+      <div class="actions">
+        <button class="btn btn-danger" onclick="resetAll()">전체 설정 초기화</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const DEFAULTS = {
+      price24: 742000,
+      price18: 0,
+      price14: 416000,
+
+      bonus24: 0,
+      bonus18: 0,
+      bonus14: 3000,
+
+      settlement24: 742000,
+      sale24: 785000,
+
+      rate24: 1,
+      rate18: 0.739,
+      rate14: 0.574,
+
+      analysisFee: 0,
+      refiningFee: 0,
+      shippingFee: 0,
+      etcFee: 0,
+      eventFee: 0,
+
+      targetProfit: 20000,
+      targetMarginRate: 2
+    };
+
+    const settingIds = Object.keys(DEFAULTS);
+
+    let products = [];
+    let nextId = 1;
+
+    function num(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function won(v) {
+      return Math.round(v).toLocaleString("ko-KR") + "원";
+    }
+
+    function weight(v) {
+      return num(v).toFixed(2) + "g";
+    }
+
+    function don(v) {
+      return num(v).toFixed(3) + "돈";
+    }
+
+    function getSetting(id) {
+      return num(document.getElementById(id).value);
+    }
+
+    function saveSettings() {
+      const data = {};
+
+      settingIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) data[id] = el.value;
+      });
+
+      localStorage.setItem("gumsentiveCalculatorSettings", JSON.stringify(data));
+    }
+
+    function loadSettings() {
+      const saved = JSON.parse(
+        localStorage.getItem("gumsentiveCalculatorSettings") || "{}"
+      );
+
+      settingIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.value =
+          saved[id] !== undefined
+            ? saved[id]
+            : DEFAULTS[id];
+      });
+    }
+
+    function getRate(karat) {
+      if (karat === "24K") return getSetting("rate24");
+      if (karat === "18K") return getSetting("rate18");
+      return getSetting("rate14");
+    }
+
+    function getBasePrice(karat) {
+      if (karat === "24K") return getSetting("price24");
+      if (karat === "18K") return getSetting("price18");
+      return getSetting("price14");
+    }
+
+    function getBonus(karat) {
+      if (karat === "24K") return getSetting("bonus24");
+      if (karat === "18K") return getSetting("bonus18");
+      return getSetting("bonus14");
+    }
+
+    function addProduct() {
+      products.push({
+        id: nextId++,
+        karat: "14K",
+        grams: 0
+      });
+
+      renderProducts();
+      calculate();
+    }
+
+    function removeProduct(id) {
+      products = products.filter(p => p.id !== id);
+
+      if (products.length === 0) {
+        addProduct();
+        return;
+      }
+
+      renderProducts();
+      calculate();
+    }
+
+    function setKarat(id, karat) {
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+
+      product.karat = karat;
+      renderProducts();
+      calculate();
+    }
+
+    function updateWeight(id, value) {
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+
+      product.grams = num(value);
+      calculate();
+    }
+
+    function renderProducts() {
+      const list = document.getElementById("productList");
+
+      list.innerHTML = products.map((p, index) => {
+        return `
+          <div class="product-row">
+            <div class="product-top">
+              <div class="product-title">제품 ${index + 1}</div>
+
+              <button
+                class="btn btn-danger"
+                onclick="removeProduct(${p.id})"
+              >
+                삭제
+              </button>
+            </div>
+
+            <div class="field">
+              <label>제품 종류</label>
+
+              <div class="karat-buttons">
+                ${["24K", "18K", "14K"].map(k => `
+                  <button
+                    class="karat-btn ${p.karat === k ? "active" : ""}"
+                    onclick="setKarat(${p.id}, '${k}')"
+                  >
+                    ${k}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+
+            <div class="grid" style="margin-top:12px;">
+              <div class="field">
+                <label>중량(g)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  inputmode="decimal"
+                  value="${p.grams || ""}"
+                  placeholder="예: 7.67"
+                  oninput="updateWeight(${p.id}, this.value)"
+                />
+              </div>
+
+              <div class="field">
+                <label>고객 적용 매입단가</label>
+                <input
+                  value="${won(getBasePrice(p.karat) + getBonus(p.karat))}"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div class="result-grid">
+              <div class="result-box">
+                <span>환산 돈수</span>
+                <strong id="don-${p.id}">0.000돈</strong>
+              </div>
+
+              <div class="result-box">
+                <span>고객 지급액</span>
+                <strong id="pay-${p.id}">0원</strong>
+              </div>
+
+              <div class="result-box">
+                <span>24K 환산량</span>
+                <strong id="pure-${p.id}">0.000돈</strong>
+              </div>
+
+              <div class="result-box">
+                <span>예상 정산금액</span>
+                <strong id="settle-${p.id}">0원</strong>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function calculate() {
+      let totalWeight = 0;
+      let totalDon = 0;
+      let totalPay = 0;
+      let totalPure = 0;
+      let totalSettlement = 0;
+
+      products.forEach(p => {
+        const grams = num(p.grams);
+
+        // 핵심: 중간값 반올림하지 않음
+        const dons = grams / 3.75;
+
+        const customerUnitPrice =
+          getBasePrice(p.karat) + getBonus(p.karat);
+
+        const customerPay =
+          dons * customerUnitPrice;
+
+        const pureDon =
+          dons * getRate(p.karat);
+
+        const settlement =
+          pureDon * getSetting("settlement24");
+
+        totalWeight += grams;
+        totalDon += dons;
+        totalPay += customerPay;
+        totalPure += pureDon;
+        totalSettlement += settlement;
+
+        const donEl = document.getElementById(`don-${p.id}`);
+        const payEl = document.getElementById(`pay-${p.id}`);
+        const pureEl = document.getElementById(`pure-${p.id}`);
+        const settleEl = document.getElementById(`settle-${p.id}`);
+
+        if (donEl) donEl.textContent = don(dons);
+        if (payEl) payEl.textContent = won(customerPay);
+        if (pureEl) pureEl.textContent = don(pureDon);
+        if (settleEl) settleEl.textContent = won(settlement);
+      });
+
+      const costs =
+        getSetting("analysisFee") +
+        getSetting("refiningFee") +
+        getSetting("shippingFee") +
+        getSetting("etcFee") +
+        getSetting("eventFee");
+
+      const profit =
+        totalSettlement -
+        totalPay -
+        costs;
+
+      const marginRate =
+        totalPay > 0
+          ? (profit / totalPay) * 100
+          : 0;
+
+      const inventoryValue =
+        totalPure * getSetting("sale24");
+
+      document.getElementById("totalWeight").textContent =
+        weight(totalWeight);
+
+      document.getElementById("totalPure").textContent =
+        don(totalPure);
+
+      document.getElementById("totalPay").textContent =
+        won(totalPay);
+
+      document.getElementById("totalSettlement").textContent =
+        won(totalSettlement);
+
+      document.getElementById("totalCosts").textContent =
+        won(costs);
+
+      document.getElementById("totalProfit").textContent =
+        won(profit);
+
+      document.getElementById("marginRate").textContent =
+        marginRate.toFixed(2) + "%";
+
+      document.getElementById("inventoryValue").textContent =
+        won(inventoryValue);
+
+      const profitBox = document.getElementById("profitBox");
+      profitBox.classList.remove("loss");
+
+      const warning = document.getElementById("warningArea");
+
+      if (profit < 0) {
+        profitBox.classList.add("loss");
+
+        warning.innerHTML = `
+          <span class="danger-text">⚠ 현재 계산 기준으로 손실 예상</span><br>
+          매입단가, 추가 지급액, 정산가, 환산율을 다시 확인하세요.
+        `;
+      } else if (profit < 10000 && totalPay > 0) {
+        warning.innerHTML = `
+          <span class="danger-text">⚠ 마진이 매우 낮습니다.</span><br>
+          이벤트 지급이나 추가 비용 발생 시 손실로 전환될 수 있습니다.
+        `;
+      } else if (totalPay > 0) {
+        warning.innerHTML = `
+          <span class="success-text">현재 입력 기준 예상 이익 발생</span><br>
+          실제 정산 전에는 도매 정산가와 공제 비용을 다시 확인하세요.
+        `;
+      } else {
+        warning.textContent =
+          "제품 중량을 입력하면 예상 마진이 자동 계산됩니다.";
+      }
+
+      calculateTargets(totalSettlement, costs);
+
+      saveSettings();
+    }
+
+    function calculateTargets(totalSettlement, costs) {
+      const targetProfit =
+        getSetting("targetProfit");
+
+      const targetMarginRate =
+        getSetting("targetMarginRate") / 100;
+
+      const maxCustomerPay =
+        Math.max(
+          0,
+          totalSettlement -
+          costs -
+          targetProfit
+        );
+
+      let maxCustomerPayRate = 0;
+
+      // profit / customerPay = target rate
+      // settlement - cost - customerPay = rate * customerPay
+      // customerPay = (settlement - cost) / (1 + rate)
+      if (targetMarginRate > -1) {
+        maxCustomerPayRate =
+          Math.max(
+            0,
+            (totalSettlement - costs) /
+            (1 + targetMarginRate)
+          );
+      }
+
+      document.getElementById("maxCustomerPay").textContent =
+        won(maxCustomerPay);
+
+      document.getElementById("maxCustomerPayRate").textContent =
+        won(maxCustomerPayRate);
+    }
+
+    function clearProducts() {
+      products = [
+        {
+          id: nextId++,
+          karat: "14K",
+          grams: 0
+        }
+      ];
+
+      renderProducts();
+      calculate();
+    }
+
+    function resetAll() {
+      const ok = confirm(
+        "시세, 환산율, 비용 설정까지 모두 초기화할까요?"
+      );
+
+      if (!ok) return;
+
+      localStorage.removeItem("gumsentiveCalculatorSettings");
+
+      settingIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = DEFAULTS[id];
+      });
+
+      clearProducts();
+    }
+
+    function bindSettings() {
+      settingIds.forEach(id => {
+        const el = document.getElementById(id);
+
+        if (!el) return;
+
+        el.addEventListener("input", () => {
+          renderProducts();
+          calculate();
+        });
+      });
+    }
+
+    // 초기 실행
+    loadSettings();
+    bindSettings();
+    addProduct();
+  </script>
+</body>
+</html>
